@@ -211,6 +211,10 @@ struct bfloat16_t
   }
 };
 
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
+
 /******************************************************************************
  * I/O stream overloads
  ******************************************************************************/
@@ -229,28 +233,41 @@ inline std::ostream& operator<<(std::ostream& out, const __nv_bfloat16& x)
 }
 
 /******************************************************************************
- * Traits overloads
+ * traits and limits
  ******************************************************************************/
 
+_LIBCUDACXX_BEGIN_NAMESPACE_STD
 template <>
-struct CUB_NS_QUALIFIER::FpLimits<bfloat16_t>
+struct __is_extended_floating_point<bfloat16_t> : true_type
+{};
+#ifndef _CCCL_NO_INLINE_VARIABLES
+template <>
+_CCCL_INLINE_VAR constexpr bool __is_extended_floating_point_v<bfloat16_t> = true;
+#endif // _CCCL_NO_INLINE_VARIABLES
+
+template <>
+class __numeric_limits_impl<bfloat16_t, __numeric_limits_type::__floating_point>
 {
-  static __host__ __device__ __forceinline__ bfloat16_t Max()
+public:
+  static __host__ __device__ __forceinline__ bfloat16_t max()
   {
-    return bfloat16_t::max();
+    return bfloat16_t(numeric_limits<__nv_bfloat16>::max());
   }
 
-  static __host__ __device__ __forceinline__ bfloat16_t Lowest()
+  static __host__ __device__ __forceinline__ bfloat16_t min()
   {
-    return bfloat16_t::lowest();
+    return bfloat16_t(numeric_limits<__nv_bfloat16>::min());
+  }
+
+  static __host__ __device__ __forceinline__ bfloat16_t lowest()
+  {
+    return bfloat16_t(numeric_limits<__nv_bfloat16>::lowest());
   }
 };
+_LIBCUDACXX_END_NAMESPACE_STD
 
 template <>
-struct CUB_NS_QUALIFIER::NumericTraits<bfloat16_t>
-    : CUB_NS_QUALIFIER::BaseTraits<FLOATING_POINT, true, false, unsigned short, bfloat16_t>
-{};
-
-#ifdef __GNUC__
-#  pragma GCC diagnostic pop
-#endif
+struct CUB_NS_QUALIFIER::detail::unsigned_bits<bfloat16_t, void>
+{
+  using type = unsigned short;
+};
