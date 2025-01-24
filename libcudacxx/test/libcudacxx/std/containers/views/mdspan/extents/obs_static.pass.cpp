@@ -51,7 +51,7 @@ test_static_observers(cuda::std::index_sequence<StaticExts...>, cuda::std::index
   // Let's only test this if the call isn't a precondition violation
   ASSERT_NOEXCEPT(E::static_extent(0));
   ASSERT_SAME_TYPE(decltype(E::static_extent(0)), size_t);
-  static_assert(cuda::std::__all < E::static_extent(Indices) == StaticExts... > ::value, "");
+  static_assert(cuda::std::__all<E::static_extent(Indices) == StaticExts...>::value, "");
 }
 
 template <class E,
@@ -79,8 +79,8 @@ __host__ __device__ void test_static_observers()
 template <class T>
 __host__ __device__ void test()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
-  constexpr size_t S = 5;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
+  constexpr size_t S                  = 5;
 
   test_static_observers<cuda::std::extents<T>, 0, 0>();
 

@@ -68,7 +68,7 @@ __host__ __device__ void testExtents()
 template <class T>
 __host__ __device__ void test()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
   testExtents<T, D>();
   testExtents<T, 3>();
   testExtents<T, 3, 3>();

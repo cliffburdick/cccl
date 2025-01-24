@@ -86,7 +86,7 @@ __host__ __device__ constexpr void test_mdspan_types(const H& handle, const M& m
 template <bool mec, bool ac, class H, class L, class A>
 __host__ __device__ constexpr void mixin_extents(const H& handle, const L& layout, const A& acc)
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
   // construct from just dynamic extents
   test_mdspan_types<mec, ac>(handle, construct_mapping(layout, cuda::std::extents<int>()), acc);
   test_mdspan_types<mec, ac>(handle, construct_mapping(layout, cuda::std::extents<char, D>(7)), acc, 7);
@@ -171,8 +171,8 @@ __host__ __device__ constexpr bool test()
   mixin_accessor<const double>();
 
   // test non-constructibility from wrong integer types
-  constexpr size_t D = cuda::std::dynamic_extent;
-  using mds_t        = cuda::std::mdspan<float, cuda::std::extents<int, 3, D, D>>;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
+  using mds_t                         = cuda::std::mdspan<float, cuda::std::extents<int, 3, D, D>>;
   // sanity check
   static_assert(cuda::std::is_constructible<mds_t, float*, int, int, int>::value, "");
   static_assert(cuda::std::is_constructible<mds_t, float*, int, int>::value, "");

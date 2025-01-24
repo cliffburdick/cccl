@@ -85,7 +85,7 @@ __host__ __device__ constexpr void test_iteration(Args... args)
 
 __host__ __device__ constexpr bool test()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
   test_iteration<cuda::std::extents<int>>();
   test_iteration<cuda::std::extents<unsigned, D>>(1);
   test_iteration<cuda::std::extents<unsigned, D>>(7);
@@ -123,7 +123,7 @@ __host__ __device__ constexpr bool test()
 
 __host__ __device__ constexpr bool test_large()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
   test_iteration<cuda::std::extents<int64_t, D, 8, D, D>>(7, 9, 10);
   test_iteration<cuda::std::extents<int64_t, D, 8, 1, D>>(7, 10);
   return true;

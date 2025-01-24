@@ -87,7 +87,7 @@ __host__ __device__ constexpr void test_conversion()
 
 __host__ __device__ constexpr void test_no_implicit_conversion()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
   // Sanity check that one static to dynamic conversion works
   static_assert(cuda::std::is_constructible<cuda::std::extents<int, D>, cuda::std::extents<int, 5>>::value, "");
   static_assert(cuda::std::is_convertible<cuda::std::extents<int, 5>, cuda::std::extents<int, D>>::value, "");
@@ -115,7 +115,7 @@ __host__ __device__ constexpr void test_no_implicit_conversion()
 
 __host__ __device__ constexpr void test_rank_mismatch()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
 
   static_assert(!cuda::std::is_constructible<cuda::std::extents<int, D>, cuda::std::extents<int>>::value, "");
   static_assert(!cuda::std::is_constructible<cuda::std::extents<int>, cuda::std::extents<int, D, D>>::value, "");
@@ -126,7 +126,7 @@ __host__ __device__ constexpr void test_rank_mismatch()
 
 __host__ __device__ constexpr void test_static_extent_mismatch()
 {
-  constexpr size_t D = cuda::std::dynamic_extent;
+  [[maybe_unused]] constexpr size_t D = cuda::std::dynamic_extent;
 
   static_assert(!cuda::std::is_constructible<cuda::std::extents<int, D, 5>, cuda::std::extents<int, D, 4>>::value, "");
   static_assert(!cuda::std::is_constructible<cuda::std::extents<int, 5>, cuda::std::extents<int, 4>>::value, "");
