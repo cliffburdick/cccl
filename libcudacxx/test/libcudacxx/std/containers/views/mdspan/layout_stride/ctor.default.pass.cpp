@@ -51,7 +51,7 @@ __host__ __device__ constexpr void test_construction()
   // check strides: node stride function is constrained on rank>0, e.extent(r) is not
   auto strides = m.strides();
   ASSERT_NOEXCEPT(m.strides());
-  cuda::std::layout_right::mapping<E> m_right;
+  cuda::std::layout_right::mapping<E> m_right{};
   for (typename E::rank_type r = 0; r < E::rank(); r++)
   {
     assert(m.stride(r) == m_right.stride(r));
