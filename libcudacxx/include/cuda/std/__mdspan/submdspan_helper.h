@@ -34,6 +34,9 @@
 #include <cuda/std/array>
 #include <cuda/std/tuple>
 
+_CCCL_DIAG_PUSH
+_CCCL_DIAG_SUPPRESS_MSVC(4848) // [[no_unique_address]] prior to C++20 as a vendor extension
+
 #if _CCCL_STD_VER >= 2017
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
@@ -188,5 +191,7 @@ __last_extent_from_slice(const _Extents& __src, _Slices... __slices) noexcept
 _LIBCUDACXX_END_NAMESPACE_STD
 
 #endif // _CCCL_STD_VER >= 2017
+
+_CCCL_DIAG_POP
 
 #endif // _LIBCUDACXX___MDSPAN_SUBMDSPAN_HELPER_H

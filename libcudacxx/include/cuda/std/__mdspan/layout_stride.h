@@ -45,6 +45,9 @@
 
 _CCCL_PUSH_MACROS
 
+_CCCL_DIAG_PUSH
+_CCCL_DIAG_SUPPRESS_MSVC(4848) // [[no_unique_address]] prior to C++20 as a vendor extension
+
 #if _CCCL_STD_VER >= 2017
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
@@ -599,6 +602,8 @@ private:
 _LIBCUDACXX_END_NAMESPACE_STD
 
 #endif // _CCCL_STD_VER >= 2017
+
+_CCCL_DIAG_POP
 
 _CCCL_POP_MACROS
 
