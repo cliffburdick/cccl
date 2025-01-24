@@ -518,101 +518,79 @@ public:
 
 private:
   // Function to construct extents storage from other extents.
-  _CCCL_TEMPLATE(size_t _DynCount, size_t _Idx, class _OtherExtents, class... _DynamicValues)
-  _CCCL_REQUIRES((_Idx < __rank_) _CCCL_AND(static_extent(_Idx) == dynamic_extent))
+  template <size_t _DynCount, size_t _Idx, class _OtherExtents, class... _DynamicValues>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr _Values __construct_vals_from_extents(
     integral_constant<size_t, _DynCount>,
     integral_constant<size_t, _Idx>,
     const _OtherExtents& __exts,
     _DynamicValues... __dynamic_values) noexcept
   {
-    return __construct_vals_from_extents(
-      integral_constant<size_t, _DynCount + 1>(),
-      integral_constant<size_t, _Idx + 1>(),
-      __exts,
-      __dynamic_values...,
-      __exts.extent(_Idx));
+    if constexpr (_Idx == __rank_)
+    {
+      (void) __exts;
+      if constexpr (_DynCount == __rank_dynamic_)
+      {
+        return _Values{static_cast<index_type>(__dynamic_values)...};
+      }
+      else
+      {
+        static_assert(_DynCount == __rank_dynamic_, "Constructor of invalid extents passed to extent::extent");
+      }
+    }
+    else // _Idx < __rank_
+    {
+      if constexpr (static_extent(_Idx) == dynamic_extent)
+      {
+        return __construct_vals_from_extents(
+          integral_constant<size_t, _DynCount + 1>(),
+          integral_constant<size_t, _Idx + 1>(),
+          __exts,
+          __dynamic_values...,
+          __exts.extent(_Idx));
+      }
+      else // static_extent(_Idx) != dynamic_extent
+      {
+        return __construct_vals_from_extents(
+          integral_constant<size_t, _DynCount>(), integral_constant<size_t, _Idx + 1>(), __exts, __dynamic_values...);
+      }
+    }
+    _CCCL_UNREACHABLE();
   }
 
-  // Function to construct extents storage from other extents.
-  _CCCL_TEMPLATE(size_t _DynCount, size_t _Idx, class _OtherExtents, class... _DynamicValues)
-  _CCCL_REQUIRES((_Idx < __rank_) _CCCL_AND(static_extent(_Idx) != dynamic_extent))
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr _Values __construct_vals_from_extents(
-    integral_constant<size_t, _DynCount>,
-    integral_constant<size_t, _Idx>,
-    const _OtherExtents& __exts,
-    _DynamicValues... __dynamic_values) noexcept
-  {
-    return __construct_vals_from_extents(
-      integral_constant<size_t, _DynCount>(), integral_constant<size_t, _Idx + 1>(), __exts, __dynamic_values...);
-  }
-
-  _CCCL_TEMPLATE(size_t _DynCount, size_t _Idx, class _OtherExtents, class... _DynamicValues)
-  _CCCL_REQUIRES((_Idx == __rank_) && (_DynCount == __rank_dynamic_))
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr _Values __construct_vals_from_extents(
-    integral_constant<size_t, _DynCount>,
-    integral_constant<size_t, _Idx>,
-    const _OtherExtents&,
-    _DynamicValues... __dynamic_values) noexcept
-  {
-    return _Values{static_cast<index_type>(__dynamic_values)...};
-  }
-
-  template <class _OtherIndexType>
-  static constexpr bool __potentially_narrowing = __mdspan_detail::__potentially_narrowing<index_type, _OtherIndexType>;
-
-  _CCCL_TEMPLATE(class _OtherIndexType, size_t... _OtherExtents)
-  _CCCL_REQUIRES((__rank_ > 0) _CCCL_AND __potentially_narrowing<_OtherIndexType>)
+  template <class _OtherIndexType, size_t... _OtherExtents>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr extents(__extent_delegate_tag,
                                               const extents<_OtherIndexType, _OtherExtents...>& __other) noexcept
       : _Values(__construct_vals_from_extents(integral_constant<size_t, 0>(), integral_constant<size_t, 0>(), __other))
   {
-    for (size_t __r = 0; __r != rank(); __r++)
+    if constexpr (rank() != 0)
     {
-      // Not catching this could lead to out of bounds errors later
-      // e.g. dextents<char,1>> e(dextents<unsigned,1>(200)) leads to an extent of -56 on e
-      _CCCL_ASSERT(__mdspan_detail::__is_representable_as<index_type>(__other.extent(__r)),
-                   "extents ctor: arguments must be representable as index_type and nonnegative");
-      // Not catching this could lead to out of bounds errors later
-      // e.g. mdspan<int, extents<int, 10>> m = mdspan<int, dextents<int, 1>>(new int[5], 5);
-      // Right-hand-side construction was ok, but m now thinks its range is 10 not 5
-      _CCCL_ASSERT(
-        (_Values::__static_value(__r) == dynamic_extent)
-          || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(_Values::__static_value(__r))),
-        "extents construction: mismatch of provided arguments with static extents.");
+      for (size_t __r = 0; __r != rank(); __r++)
+      {
+        if constexpr (__mdspan_detail::__potentially_narrowing<index_type, _OtherIndexType>)
+        {
+          // Not catching this could lead to out of bounds errors later
+          // e.g. dextents<char,1>> e(dextents<unsigned,1>(200)) leads to an extent of -56 on e
+          _CCCL_ASSERT(__mdspan_detail::__is_representable_as<index_type>(__other.extent(__r)),
+                       "extents ctor: arguments must be representable as index_type and nonnegative");
+        }
+
+        // Not catching this could lead to out of bounds errors later
+        // e.g. mdspan<int, extents<int, 10>> m = mdspan<int, dextents<int, 1>>(new int[5], 5);
+        // Right-hand-side construction was ok, but m now thinks its range is 10 not 5
+        _CCCL_ASSERT(
+          (_Values::__static_value(__r) == dynamic_extent)
+            || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(_Values::__static_value(__r))),
+          "extents construction: mismatch of provided arguments with static extents.");
+      }
     }
   }
-
-  _CCCL_TEMPLATE(class _OtherIndexType, size_t... _OtherExtents)
-  _CCCL_REQUIRES((rank() > 0) _CCCL_AND(!__potentially_narrowing<_OtherIndexType>))
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr extents(__extent_delegate_tag,
-                                              const extents<_OtherIndexType, _OtherExtents...>& __other) noexcept
-      : _Values(__construct_vals_from_extents(integral_constant<size_t, 0>(), integral_constant<size_t, 0>(), __other))
-  {
-    for (size_t __r = 0; __r != rank(); __r++)
-    {
-      // Not catching this could lead to out of bounds errors later
-      // e.g. mdspan<int, extents<int, 10>> m = mdspan<int, dextents<int, 1>>(new int[5], 5);
-      // Right-hand-side construction was ok, but m now thinks its range is 10 not 5
-      _CCCL_ASSERT(
-        (_Values::__static_value(__r) == dynamic_extent)
-          || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(_Values::__static_value(__r))),
-        "extents construction: mismatch of provided arguments with static extents.");
-    }
-  }
-
-  _CCCL_TEMPLATE(class _OtherIndexType, size_t... _OtherExtents)
-  _CCCL_REQUIRES((rank() == 0))
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr extents(__extent_delegate_tag,
-                                              const extents<_OtherIndexType, _OtherExtents...>&) noexcept
-  {}
 
 public:
   // Converting constructor from other extents specializations
   template <class _OtherIndexType, size_t... _OtherExtents>
   static constexpr bool __is_explicit_conversion =
     (((_Extents != dynamic_extent) && (_OtherExtents == dynamic_extent)) || ...)
-    || __potentially_narrowing<_OtherIndexType>;
+    || __mdspan_detail::__potentially_narrowing<index_type, _OtherIndexType>;
 
   template <size_t... _OtherExtents>
   static constexpr bool __is_matching_extents =
