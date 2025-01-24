@@ -106,29 +106,34 @@ struct __possibly_empty_array
 template <class _Tp>
 struct __possibly_empty_array<_Tp, 0>
 {
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp& operator[](size_t)
-  {
 #  if _CCCL_COMPILER(MSVC)
-    return *__get_fake_ptr();
-#  else // ^^^ _CCCL_COMPILER(MSVC) ^^^ / vvv !_CCCL_COMPILER(MSVC) vvv
-    _CCCL_UNREACHABLE();
-#  endif // !_CCCL_COMPILER(MSVC)
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp& operator[](size_t __index)
+  {
+    return *__get(__index);
   }
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr const _Tp& operator[](size_t) const
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr const _Tp& operator[](size_t __index) const
   {
-#  if _CCCL_COMPILER(MSVC)
-    return *__get_fake_ptr();
-#  else // ^^^ _CCCL_COMPILER(MSVC) ^^^ / vvv !_CCCL_COMPILER(MSVC) vvv
-    _CCCL_UNREACHABLE();
-#  endif // !_CCCL_COMPILER(MSVC)
+    return *__get(__index);
   }
 
-#  if _CCCL_COMPILER(MSVC)
-  _CCCL_NODISCARD _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp* __get_fake_ptr() noexcept
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp* __get(size_t)
   {
     return nullptr;
   }
-#  endif // _CCCL_COMPILER(MSVC)
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr const _Tp* __get(size_t) const
+  {
+    return nullptr;
+  }
+#  else // ^^^ _CCCL_COMPILER(MSVC) ^^^ / vvv !_CCCL_COMPILER(MSVC) vvv
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp& operator[](size_t)
+  {
+    _CCCL_UNREACHABLE();
+  }
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr const _Tp& operator[](size_t) const
+  {
+    _CCCL_UNREACHABLE();
+  }
+#  endif // !_CCCL_COMPILER(MSVC)
 };
 
 // ------------------------------------------------------------------
