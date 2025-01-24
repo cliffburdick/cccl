@@ -19,12 +19,26 @@
 // Make sure we don't assume copyable, default constructible, movable etc.
 struct MinimalElementType
 {
+  struct tag
+  {
+    __host__ __device__ constexpr tag(int) noexcept {}
+
+    __host__ __device__ constexpr operator int() noexcept
+    {
+      return 42;
+    }
+  };
+
   int val;
   constexpr MinimalElementType()                                     = delete;
   constexpr MinimalElementType(const MinimalElementType&)            = delete;
   constexpr MinimalElementType& operator=(const MinimalElementType&) = delete;
   __host__ __device__ constexpr explicit MinimalElementType(int v) noexcept
       : val(v)
+  {}
+
+  __host__ __device__ constexpr MinimalElementType(tag) noexcept
+      : val(42)
   {}
 };
 
@@ -33,14 +47,9 @@ template <class T, size_t N>
 struct ElementPool
 {
 private:
-  __host__ __device__ static constexpr T to_42(const int) noexcept
-  {
-    return T{42};
-  }
-
   template <int... Indices>
   __host__ __device__ constexpr ElementPool(cuda::std::integer_sequence<int, Indices...>)
-      : ptr_{to_42(Indices)...}
+      : ptr_{T{MinimalElementType::tag{Indices}}...}
   {}
 
 public:
