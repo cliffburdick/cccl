@@ -191,10 +191,11 @@ struct __maybe_static_array
 
 private:
   // Static values member
-  static constexpr size_t __size_         = sizeof...(_Values);
-  static constexpr size_t __size_dynamic_ = (size_t(0) + ... + static_cast<size_t>(_Values == _DynTag));
-  using _StaticValues                     = __static_array<_TStatic, _Values...>;
-  using _DynamicValues                    = __possibly_empty_array<_TDynamic, __size_dynamic_>;
+  static constexpr size_t __size_ = sizeof...(_Values);
+  static constexpr size_t __size_dynamic_ =
+    _CUDA_VSTD::__mdspan_detail::__count_dynamic<_TStatic, _DynTag, _Values...>();
+  using _StaticValues  = __static_array<_TStatic, _Values...>;
+  using _DynamicValues = __possibly_empty_array<_TDynamic, __size_dynamic_>;
 
   // static mapping of indices to the position in the dynamic values array
   using _DynamicIdxMap = __static_partial_sums<static_cast<size_t>(_Values == _DynTag)...>;
