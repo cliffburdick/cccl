@@ -164,13 +164,20 @@ struct __static_partial_sums
 // ------------ __maybe_static_array --------------------------------
 // ------------------------------------------------------------------
 
+template <class _TStatic, _TStatic _DynTag, _TStatic... _Values>
+_CCCL_NODISCARD _LIBCUDACXX_HIDE_FROM_ABI constexpr size_t __count_dynamic()
+{
+  return _CCCL_FOLD_PLUS(size_t(0), static_cast<size_t>(_Values == _DynTag));
+}
+
 // array like class which has a mix of static and runtime values but
 // only stores the runtime values.
 // The type of the static and the runtime values can be different.
 // The position of a dynamic value is indicated through a tag value.
 template <class _TDynamic, class _TStatic, _TStatic _DynTag, _TStatic... _Values>
 struct __maybe_static_array
-    : private __possibly_empty_array<_TDynamic, _CCCL_FOLD_PLUS(size_t(0), static_cast<size_t>(_Values == _DynTag))>
+    : private __possibly_empty_array<_TDynamic,
+                                     _CUDA_VSTD::__mdspan_detail::__count_dynamic<_TStatic, _DynTag, _Values...>()>
 {
   static_assert(is_convertible<_TStatic, _TDynamic>::value,
                 "__maybe_static_array: _TStatic must be convertible to _TDynamic");
