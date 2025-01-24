@@ -172,7 +172,7 @@ struct __static_partial_sums
 template <class _TStatic, _TStatic _DynTag, _TStatic... _Values>
 _CCCL_NODISCARD _LIBCUDACXX_HIDE_FROM_ABI constexpr size_t __count_dynamic()
 {
-  return _CCCL_FOLD_PLUS(size_t(0), static_cast<size_t>(_Values == _DynTag));
+  return (size_t(0) + ... + static_cast<size_t>(_Values == _DynTag));
 }
 
 // array like class which has a mix of static and runtime values but
@@ -192,7 +192,7 @@ struct __maybe_static_array
 private:
   // Static values member
   static constexpr size_t __size_         = sizeof...(_Values);
-  static constexpr size_t __size_dynamic_ = _CCCL_FOLD_PLUS(size_t(0), static_cast<size_t>(_Values == _DynTag));
+  static constexpr size_t __size_dynamic_ = (size_t(0) + ... + static_cast<size_t>(_Values == _DynTag));
   using _StaticValues                     = __static_array<_TStatic, _Values...>;
   using _DynamicValues                    = __possibly_empty_array<_TDynamic, __size_dynamic_>;
 
@@ -382,7 +382,7 @@ _CCCL_TEMPLATE(class _To, class... _From)
 _CCCL_REQUIRES(integral<_To>)
 _LIBCUDACXX_HIDE_FROM_ABI constexpr bool __are_representable_as(_From... __values)
 {
-  return _CCCL_FOLD_AND(__mdspan_detail::__is_representable_as<_To>(__values));
+  return (__mdspan_detail::__is_representable_as<_To>(__values) && ... && true);
 }
 
 _CCCL_TEMPLATE(class _To, class _From, size_t _Size)
@@ -430,7 +430,7 @@ public:
 private:
   static constexpr rank_type __rank_ = sizeof...(_Extents);
   static constexpr rank_type __rank_dynamic_ =
-    _CCCL_FOLD_PLUS(rank_type(0), (static_cast<rank_type>(_Extents == dynamic_extent)));
+    (rank_type(0) + ... + (static_cast<rank_type>(_Extents == dynamic_extent)));
 
   // internal storage type using __maybe_static_array
   using _Values = __mdspan_detail::__maybe_static_array<_IndexType, size_t, dynamic_extent, _Extents...>;
@@ -458,16 +458,11 @@ public:
   // [mdspan.extents.cons], constructors
   constexpr extents() noexcept = default;
 
-  template <class... _OtherIndexTypes>
-  static constexpr bool __all_convertible_to_index_type =
-    _CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, _OtherIndexTypes, index_type))
-    && _CCCL_FOLD_AND(_CCCL_TRAIT(is_nothrow_constructible, index_type, _OtherIndexTypes));
-
   // Construction from just dynamic or all values.
   // Precondition check is deferred to __maybe_static_array constructor
   _CCCL_TEMPLATE(class... _OtherIndexTypes)
   _CCCL_REQUIRES((sizeof...(_OtherIndexTypes) == __rank_ || sizeof...(_OtherIndexTypes) == __rank_dynamic_)
-                   _CCCL_AND __all_convertible_to_index_type<_OtherIndexTypes...>)
+                   _CCCL_AND __mdspan_detail::__all_convertible_to_index_type<index_type, _OtherIndexTypes...>)
   _LIBCUDACXX_HIDE_FROM_ABI constexpr explicit extents(_OtherIndexTypes... __dynvals) noexcept
       : _Values(static_cast<index_type>(__dynvals)...)
   {
@@ -615,21 +610,24 @@ public:
   // Converting constructor from other extents specializations
   template <class _OtherIndexType, size_t... _OtherExtents>
   static constexpr bool __is_explicit_conversion =
-    _CCCL_FOLD_OR(((_Extents != dynamic_extent) && (_OtherExtents == dynamic_extent)))
+    (((_Extents != dynamic_extent) && (_OtherExtents == dynamic_extent)) || ...)
     || __potentially_narrowing<_OtherIndexType>;
 
+  template <size_t... _OtherExtents>
+  static constexpr bool __is_matching_extents =
+    (_OtherExtents == dynamic_extent || _Extents == dynamic_extent || _OtherExtents == _Extents) && ... && true;
+
   _CCCL_TEMPLATE(class _OtherIndexType, size_t... _OtherExtents)
-  _CCCL_REQUIRES((sizeof...(_OtherExtents) == sizeof...(_Extents)) _CCCL_AND _CCCL_FOLD_AND(
-    (_OtherExtents == dynamic_extent || _Extents == dynamic_extent || _OtherExtents == _Extents))
+  _CCCL_REQUIRES((sizeof...(_OtherExtents) == sizeof...(_Extents)) _CCCL_AND __is_matching_extents<_OtherExtents...>
                    _CCCL_AND(!__is_explicit_conversion<_OtherIndexType, _OtherExtents...>))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr extents(const extents<_OtherIndexType, _OtherExtents...>& __other) noexcept
       : extents(__extent_delegate_tag{}, __other)
   {}
 
   _CCCL_TEMPLATE(class _OtherIndexType, size_t... _OtherExtents)
-  _CCCL_REQUIRES((sizeof...(_OtherExtents) == sizeof...(_Extents)) _CCCL_AND _CCCL_FOLD_AND(
-    (_OtherExtents == dynamic_extent || _Extents == dynamic_extent || _OtherExtents == _Extents))
-                   _CCCL_AND __is_explicit_conversion<_OtherIndexType, _OtherExtents...>)
+  _CCCL_REQUIRES((sizeof...(_OtherExtents) == sizeof...(_Extents))
+                   _CCCL_AND __is_matching_extents<_OtherExtents...> _CCCL_AND
+                     __is_explicit_conversion<_OtherIndexType, _OtherExtents...>)
   _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr extents(
     const extents<_OtherIndexType, _OtherExtents...>& __other) noexcept
       : extents(__extent_delegate_tag{}, __other)
@@ -777,7 +775,7 @@ template <size_t... _Idxs, class _Extents, class... _From>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr bool
 __is_multidimensional_index_in_impl(index_sequence<_Idxs...>, const _Extents& __ext, _From... __values)
 {
-  return _CCCL_FOLD_AND(__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values));
+  return (__mdspan_detail::__is_index_in_extent(__ext.extent(_Idxs), __values) && ... && true);
 }
 
 template <class _Extents, class... _From>

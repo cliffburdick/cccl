@@ -239,8 +239,7 @@ public:
 
   _CCCL_TEMPLATE(class... _Indices)
   _CCCL_REQUIRES((sizeof...(_Indices) == extents_type::rank())
-                   _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, _Indices, index_type))
-                     _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_nothrow_constructible, index_type, _Indices)))
+                   _CCCL_AND __mdspan_detail::__all_convertible_to_index_type<index_type, _Indices...>)
   _LIBCUDACXX_HIDE_FROM_ABI constexpr index_type operator()(_Indices... __idx) const noexcept
   {
     // Mappings are generally meant to be used for accessing allocations and are meant to guarantee to never

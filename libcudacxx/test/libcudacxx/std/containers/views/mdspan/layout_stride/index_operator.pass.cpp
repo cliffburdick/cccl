@@ -59,7 +59,7 @@ template <class M, class... Args, size_t... Pos>
 __host__ __device__ constexpr size_t get_strides(
   const cuda::std::array<int, M::extents_type::rank()>& strides, cuda::std::index_sequence<Pos...>, Args... args)
 {
-  return _CCCL_FOLD_PLUS(size_t{0}, (args * strides[Pos]));
+  return (size_t{0} + ... + (args * strides[Pos]));
 }
 
 template <class M, class... Args, cuda::std::enable_if_t<(M::extents_type::rank() == sizeof...(Args)), int> = 0>

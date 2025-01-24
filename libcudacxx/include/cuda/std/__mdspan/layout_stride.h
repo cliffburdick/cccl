@@ -240,11 +240,11 @@ public:
     (void) __strides; // nvcc believes strides is unused here
     if constexpr (_CCCL_TRAIT(is_integral, _OtherIndexType))
     {
-      return _CCCL_FOLD_AND((__strides[_Pos] > static_cast<_OtherIndexType>(0)));
+      return ((__strides[_Pos] > static_cast<_OtherIndexType>(0)) && ... && true);
     }
     else
     {
-      return _CCCL_FOLD_AND((static_cast<index_type>(__strides[_Pos]) > static_cast<index_type>(0)));
+      return ((static_cast<index_type>(__strides[_Pos]) > static_cast<index_type>(0)) && ... && true);
     }
     _CCCL_UNREACHABLE();
   }
@@ -337,7 +337,7 @@ public:
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr auto
   __check_mapped_strides(const _StridedLayoutMapping& __other, index_sequence<_Pos...>) noexcept
   {
-    return _CCCL_FOLD_AND((static_cast<index_type>(__other.stride(_Pos)) > static_cast<index_type>(0)));
+    return ((static_cast<index_type>(__other.stride(_Pos)) > static_cast<index_type>(0)) && ... && true);
   }
   template <class _StridedLayoutMapping>
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr auto
@@ -400,14 +400,14 @@ public:
   template <size_t... _Pos>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr index_type __required_span_size(index_sequence<_Pos...>) const noexcept
   {
-    const index_type __product = _CCCL_FOLD_TIMES(index_type{1}, __extents_.extent(_Pos));
+    const index_type __product = (index_type{1} * ... * __extents_.extent(_Pos));
     if (__product == index_type{0})
     {
       return index_type{0};
     }
     else
     {
-      return _CCCL_FOLD_PLUS(index_type{1}, ((__extents_.extent(_Pos) - static_cast<index_type>(1)) * __strides_[_Pos]));
+      return (index_type{1} + ... + ((__extents_.extent(_Pos) - static_cast<index_type>(1)) * __strides_[_Pos]));
     }
   }
 
@@ -427,13 +427,12 @@ public:
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr index_type
   __op_index(const __stride_array& __strides, index_sequence<_Pos...>, _Indices... __idx) noexcept
   {
-    return _CCCL_FOLD_PLUS(index_type{0}, (static_cast<index_type>(__idx) * __strides[_Pos]));
+    return (index_type{0} + ... + (static_cast<index_type>(__idx) * __strides[_Pos]));
   }
 
   _CCCL_TEMPLATE(class... _Indices)
-  _CCCL_REQUIRES((sizeof...(_Indices) == __rank_)
-                   _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, _Indices, index_type))
-                     _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_nothrow_constructible, index_type, _Indices)))
+  _CCCL_REQUIRES((sizeof...(_Indices) == extents_type::rank())
+                   _CCCL_AND __mdspan_detail::__all_convertible_to_index_type<index_type, _Indices...>)
   _LIBCUDACXX_HIDE_FROM_ABI constexpr index_type operator()(_Indices... __idx) const noexcept
   {
     // Mappings are generally meant to be used for accessing allocations and are meant to guarantee to never
@@ -470,7 +469,7 @@ public:
   template <size_t... _Pos>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr index_type __to_total_size(index_sequence<_Pos...>) const noexcept
   {
-    return _CCCL_FOLD_TIMES(index_type{1}, (__extents_.extent(_Pos)));
+    return (index_type{1} * ... * (__extents_.extent(_Pos)));
   }
 
   _LIBCUDACXX_HIDE_FROM_ABI constexpr bool is_exhaustive() const noexcept
@@ -537,8 +536,8 @@ public:
   {
     // avoid warning when comparing signed and unsigner integers and pick the wider of two types
     using _CommonType = common_type_t<index_type, typename _OtherMapping::index_type>;
-    return _CCCL_FOLD_AND(
-      (static_cast<_CommonType>(__lhs.stride(_Pos)) == static_cast<_CommonType>(__rhs.stride(_Pos))));
+    return ((static_cast<_CommonType>(__lhs.stride(_Pos)) == static_cast<_CommonType>(__rhs.stride(_Pos))) && ...
+            && true);
   }
 
   template <class _OtherMapping>
@@ -574,8 +573,8 @@ public:
 #  if _CCCL_STD_VER <= 2017
   template <class _OtherMapping>
   _LIBCUDACXX_HIDE_FROM_ABI friend constexpr auto operator==(const _OtherMapping& __lhs, const mapping& __rhs) noexcept
-    _CCCL_TRAILING_REQUIRES(bool)((!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>)
-                                  && __can_compare<_OtherMapping>)
+    _CCCL_TRAILING_REQUIRES(bool)(
+      (!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>) &&__can_compare<_OtherMapping>)
   {
     return __op_eq(__rhs, __lhs);
   }
@@ -587,8 +586,8 @@ public:
   }
   template <class _OtherMapping, class _Extents2 = _Extents>
   _LIBCUDACXX_HIDE_FROM_ABI friend constexpr auto operator!=(const _OtherMapping& __lhs, const mapping& __rhs) noexcept
-    _CCCL_TRAILING_REQUIRES(bool)((!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>)
-                                  && __can_compare<_OtherMapping>)
+    _CCCL_TRAILING_REQUIRES(bool)(
+      (!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>) &&__can_compare<_OtherMapping>)
   {
     return __op_eq(__rhs, __lhs);
   }

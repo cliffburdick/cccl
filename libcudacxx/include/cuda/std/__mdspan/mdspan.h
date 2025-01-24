@@ -144,10 +144,9 @@ public:
   _CCCL_TEMPLATE(class... _OtherIndexTypes)
   _CCCL_REQUIRES(((sizeof...(_OtherIndexTypes) == extents_type::rank())
                   || (sizeof...(_OtherIndexTypes) == extents_type::rank_dynamic()))
-                   _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, _OtherIndexTypes, index_type))
-                     _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_nothrow_constructible, index_type, _OtherIndexTypes))
-                       _CCCL_AND _CCCL_TRAIT(is_constructible, mapping_type, extents_type)
-                         _CCCL_AND _CCCL_TRAIT(is_default_constructible, accessor_type))
+                   _CCCL_AND __mdspan_detail::__all_convertible_to_index_type<index_type, _OtherIndexTypes...> _CCCL_AND
+                     _CCCL_TRAIT(is_constructible, mapping_type, extents_type)
+                       _CCCL_AND _CCCL_TRAIT(is_default_constructible, accessor_type))
   _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr mdspan(data_handle_type __p, _OtherIndexTypes... __exts)
       : __ptr_(_CUDA_VSTD::move(__p))
       , __map_(extents_type(static_cast<index_type>(_CUDA_VSTD::move(__exts))...))
@@ -330,8 +329,7 @@ public:
 #  if defined(_LIBCUDACXX_HAS_MULTIARG_OPERATOR_BRACKETS)
   _CCCL_TEMPLATE(class... _OtherIndexTypes)
   _CCCL_REQUIRES((sizeof...(_OtherIndexTypes) == extents_type::rank())
-                   _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, _OtherIndexTypes, index_type))
-                     _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_nothrow_constructible, index_type, _OtherIndexTypes)))
+                   _CCCL_AND __mdspan_detail::__all_convertible_to_index_type<index_type, _OtherIndexTypes...>)
   _LIBCUDACXX_HIDE_FROM_ABI constexpr reference operator[](_OtherIndexTypes... __indices) const
   {
     // Note the standard layouts would also check this, but user provided ones may not, so we
@@ -382,10 +380,9 @@ public:
   }
 
   //! Nonstandard extension to no break our users too hard
-  _CCCL_TEMPLATE(class... _OtherIndices)
-  _CCCL_REQUIRES(_CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, const _OtherIndices&, index_type))
-                   _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_nothrow_constructible, index_type, const _OtherIndices&)))
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr reference operator()(_OtherIndices... __indices) const
+  _CCCL_TEMPLATE(class... _Indices)
+  _CCCL_REQUIRES(__mdspan_detail::__all_convertible_to_index_type<index_type, _Indices...>)
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr reference operator()(_Indices... __indices) const
   {
     return __acc_.access(__ptr_, __map_(__indices...));
   }
@@ -420,7 +417,7 @@ public:
   template <size_t... _Idxs>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr size_type __op_size(index_sequence<_Idxs...>) const noexcept
   {
-    return _CCCL_FOLD_TIMES(size_type{1}, static_cast<size_type>(__map_.extents().extent(_Idxs)));
+    return (size_type{1} * ... * static_cast<size_type>(__map_.extents().extent(_Idxs)));
   }
 
   _LIBCUDACXX_HIDE_FROM_ABI constexpr size_type size() const noexcept
@@ -434,7 +431,7 @@ public:
   template <size_t... _Idxs>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr bool __op_empty(index_sequence<_Idxs...>) const noexcept
   {
-    return _CCCL_FOLD_OR((__map_.extents().extent(_Idxs) == index_type{0}));
+    return (((__map_.extents().extent(_Idxs) == index_type{0})) || ...);
   }
 
   _CCCL_NODISCARD _LIBCUDACXX_HIDE_FROM_ABI constexpr bool empty() const noexcept
@@ -513,7 +510,7 @@ private:
 #  if _CCCL_STD_VER >= 2017
 _CCCL_TEMPLATE(class _ElementType, class... _OtherIndexTypes)
 _CCCL_REQUIRES((sizeof...(_OtherIndexTypes) > 0)
-                 _CCCL_AND _CCCL_FOLD_AND(_CCCL_TRAIT(is_convertible, _OtherIndexTypes, size_t)))
+                 _CCCL_AND(_CCCL_TRAIT(is_convertible, _OtherIndexTypes, size_t) && ... && true))
 _CCCL_HOST_DEVICE explicit mdspan(_ElementType*, _OtherIndexTypes...)
   -> mdspan<_ElementType, extents<size_t, __maybe_static_ext<_OtherIndexTypes>...>>;
 
