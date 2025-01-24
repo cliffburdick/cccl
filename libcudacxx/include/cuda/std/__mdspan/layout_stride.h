@@ -193,7 +193,7 @@ private:
       }
       else
       {
-        return __offset(__mapping, _CUDA_VSTD::make_index_sequence<__rank_>());
+        return static_cast<index_type>(__offset(__mapping, _CUDA_VSTD::make_index_sequence<__rank_>()));
       }
     }
     else
