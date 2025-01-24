@@ -399,8 +399,22 @@ public:
   template <size_t... _Idxs>
   _LIBCUDACXX_HIDE_FROM_ABI constexpr bool __check_size(index_sequence<_Idxs...>) const noexcept
   {
-    size_t __prod = 1;
-    return !_CCCL_FOLD_OR((__mul_overflow(__prod, __map_.extents().extent(_Idxs), &__prod)));
+    if constexpr (sizeof...(_Idxs) != 0)
+    {
+      size_t __prod = 1;
+      for (size_t __r = 0; __r != sizeof...(_Idxs); ++__r)
+      {
+        if (__mul_overflow(__prod, __map_.extents().extent(_Idxs)))
+        {
+          return false;
+        }
+      }
+    }
+    else
+    {
+      return true;
+    }
+    _CCCL_UNREACHABLE();
   }
 
   template <size_t... _Idxs>
