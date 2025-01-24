@@ -29,8 +29,7 @@
 template <class E, class... Args>
 __host__ __device__ constexpr void test_stride(cuda::std::array<typename E::index_type, E::rank()> strides, Args... args)
 {
-  using M = cuda::std::layout_right::mapping<E>;
-  M m(E(args...));
+  cuda::std::layout_right::mapping<E> m(E(args...));
 
   ASSERT_NOEXCEPT(m.stride(0));
   for (size_t r = 0; r < E::rank(); r++)
