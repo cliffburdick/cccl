@@ -33,14 +33,14 @@ template <class T, size_t N>
 struct ElementPool
 {
 private:
-  __host__ __device__ static constexpr int to_42(const int) noexcept
+  __host__ __device__ static constexpr T to_42(const int) noexcept
   {
-    return 42;
+    return T{42};
   }
 
   template <int... Indices>
   __host__ __device__ constexpr ElementPool(cuda::std::integer_sequence<int, Indices...>)
-      : ptr_{T(to_42(Indices))...}
+      : ptr_{to_42(Indices)...}
   {}
 
 public:
