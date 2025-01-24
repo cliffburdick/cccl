@@ -401,7 +401,7 @@ public:
       size_t __prod = 1;
       for (size_t __r = 0; __r != sizeof...(_Idxs); ++__r)
       {
-        if (__mul_overflow(__prod, __map_.extents().extent(_Idxs)))
+        if (__mul_overflow(__prod, __map_.extents().extent(_Idxs), &__prod))
         {
           return false;
         }
