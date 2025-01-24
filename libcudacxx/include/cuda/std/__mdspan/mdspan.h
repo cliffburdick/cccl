@@ -118,14 +118,6 @@ public:
   //--------------------------------------------------------------------------------
   // [mdspan.mdspan.cons], mdspan constructors, assignment, and destructor
 
-#  if _CCCL_STD_VER >= 2020 && (!_CCCL_CUDA_COMPILER(NVCC, <, 12, 3))
-  constexpr mdspan() noexcept(_CCCL_TRAIT(is_nothrow_default_constructible, data_handle_type)
-                              && _CCCL_TRAIT(is_nothrow_default_constructible, mapping_type)
-                              && _CCCL_TRAIT(is_nothrow_default_constructible, accessor_type))
-    requires((extents_type::rank_dynamic() > 0) && is_default_constructible_v<data_handle_type>
-             && is_default_constructible_v<mapping_type> && is_default_constructible_v<accessor_type>)
-  = default;
-#  else // ^^^ _CCCL_STD_VER >= 2020 ^^^ / vvv _CCCL_STD_VER <= 2017 vvv
   _CCCL_TEMPLATE(class _Extents2 = _Extents)
   _CCCL_REQUIRES((_Extents2::rank_dynamic() > 0) //
                  _CCCL_AND _CCCL_TRAIT(is_default_constructible, data_handle_type)
@@ -135,8 +127,10 @@ public:
     _CCCL_TRAIT(is_nothrow_default_constructible, data_handle_type)
     && _CCCL_TRAIT(is_nothrow_default_constructible, mapping_type)
     && _CCCL_TRAIT(is_nothrow_default_constructible, accessor_type))
+      : __ptr_()
+      , __map_()
+      , __acc_()
   {}
-#  endif // _CCCL_STD_VER <= 2017
 
   constexpr mdspan(const mdspan&) = default;
   constexpr mdspan(mdspan&&)      = default;
@@ -228,8 +222,7 @@ public:
     && _CCCL_TRAIT(is_convertible, const _OtherAccessor&, accessor_type);
 
   _CCCL_TEMPLATE(class _OtherElementType, class _OtherExtents, class _OtherLayoutPolicy, class _OtherAccessor)
-  _CCCL_REQUIRES((extents_type::rank() > 0) //
-                 _CCCL_AND __is_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor> //
+  _CCCL_REQUIRES(__is_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor> //
                    _CCCL_AND __is_implicit_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor>)
   _LIBCUDACXX_HIDE_FROM_ABI constexpr mdspan(
     const mdspan<_OtherElementType, _OtherExtents, _OtherLayoutPolicy, _OtherAccessor>& __other)
@@ -242,41 +235,28 @@ public:
     static_assert(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents),
                   "mdspan: incompatible extents for mdspan construction");
 
-    // The following precondition is part of the standard, but is unlikely to be triggered.
-    // The extents constructor checks this and the mapping must be storing the extents, since
-    // its extents() function returns a const reference to extents_type.
-    // The only way this can be triggered is if the mapping conversion constructor would for example
-    // always construct its extents() only from the dynamic extents, instead of from the other extents.
-    for (size_t __r = 0; __r < extents_type::rank(); __r++)
+    if constexpr (extents_type::rank() != 0)
     {
-      // Not catching this could lead to out of bounds errors later
-      // e.g. mdspan<int, dextents<char,1>, non_checking_layout> m =
-      //        mdspan<int, dextents<unsigned, 1>, non_checking_layout>(ptr, 200); leads to an extent of -56 on m
-      _CCCL_ASSERT((static_extent(__r) == dynamic_extent)
-                     || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(static_extent(__r))),
-                   "mdspan: conversion mismatch of source dynamic extents with static extents");
+      // The following precondition is part of the standard, but is unlikely to be triggered.
+      // The extents constructor checks this and the mapping must be storing the extents, since
+      // its extents() function returns a const reference to extents_type.
+      // The only way this can be triggered is if the mapping conversion constructor would for example
+      // always construct its extents() only from the dynamic extents, instead of from the other extents.
+      for (size_t __r = 0; __r != extents_type::rank(); __r++)
+      {
+        // Not catching this could lead to out of bounds errors later
+        // e.g. mdspan<int, dextents<char,1>, non_checking_layout> m =
+        //        mdspan<int, dextents<unsigned, 1>, non_checking_layout>(ptr, 200); leads to an extent of -56 on m
+        _CCCL_ASSERT((static_extent(__r) == dynamic_extent)
+                       || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(static_extent(__r))),
+                     "mdspan: conversion mismatch of source dynamic extents with static extents");
+      }
     }
   }
 
   _CCCL_TEMPLATE(class _OtherElementType, class _OtherExtents, class _OtherLayoutPolicy, class _OtherAccessor)
-  _CCCL_REQUIRES((extents_type::rank() == 0) //
-                 _CCCL_AND __is_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor> //
-                   _CCCL_AND __is_implicit_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor>)
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr mdspan(
-    const mdspan<_OtherElementType, _OtherExtents, _OtherLayoutPolicy, _OtherAccessor>& __other)
-      : __ptr_(__other.__ptr_)
-      , __map_(__other.__map_)
-      , __acc_(__other.__acc_)
-  {
-    static_assert(_CCCL_TRAIT(is_constructible, data_handle_type, const typename _OtherAccessor::data_handle_type&),
-                  "mdspan: incompatible data_handle_type for mdspan construction");
-    static_assert(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents),
-                  "mdspan: incompatible extents for mdspan construction");
-  }
-  _CCCL_TEMPLATE(class _OtherElementType, class _OtherExtents, class _OtherLayoutPolicy, class _OtherAccessor)
-  _CCCL_REQUIRES((extents_type::rank() > 0) //
-                 _CCCL_AND __is_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor> //
-                   _CCCL_AND(!__is_implicit_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor>))
+  _CCCL_REQUIRES(__is_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor> _CCCL_AND(
+    !__is_implicit_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor>))
   _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr mdspan(
     const mdspan<_OtherElementType, _OtherExtents, _OtherLayoutPolicy, _OtherAccessor>& __other)
       : __ptr_(__other.__ptr_)
@@ -288,36 +268,23 @@ public:
     static_assert(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents),
                   "mdspan: incompatible extents for mdspan construction");
 
-    // The following precondition is part of the standard, but is unlikely to be triggered.
-    // The extents constructor checks this and the mapping must be storing the extents, since
-    // its extents() function returns a const reference to extents_type.
-    // The only way this can be triggered is if the mapping conversion constructor would for example
-    // always construct its extents() only from the dynamic extents, instead of from the other extents.
-    for (size_t __r = 0; __r < extents_type::rank(); __r++)
+    if constexpr (extents_type::rank() != 0)
     {
-      // Not catching this could lead to out of bounds errors later
-      // e.g. mdspan<int, dextents<char,1>, non_checking_layout> m =
-      //        mdspan<int, dextents<unsigned, 1>, non_checking_layout>(ptr, 200); leads to an extent of -56 on m
-      _CCCL_ASSERT((static_extent(__r) == dynamic_extent)
-                     || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(static_extent(__r))),
-                   "mdspan: conversion mismatch of source dynamic extents with static extents");
+      // The following precondition is part of the standard, but is unlikely to be triggered.
+      // The extents constructor checks this and the mapping must be storing the extents, since
+      // its extents() function returns a const reference to extents_type.
+      // The only way this can be triggered is if the mapping conversion constructor would for example
+      // always construct its extents() only from the dynamic extents, instead of from the other extents.
+      for (size_t __r = 0; __r < extents_type::rank(); __r++)
+      {
+        // Not catching this could lead to out of bounds errors later
+        // e.g. mdspan<int, dextents<char,1>, non_checking_layout> m =
+        //        mdspan<int, dextents<unsigned, 1>, non_checking_layout>(ptr, 200); leads to an extent of -56 on m
+        _CCCL_ASSERT((static_extent(__r) == dynamic_extent)
+                       || (static_cast<index_type>(__other.extent(__r)) == static_cast<index_type>(static_extent(__r))),
+                     "mdspan: conversion mismatch of source dynamic extents with static extents");
+      }
     }
-  }
-
-  _CCCL_TEMPLATE(class _OtherElementType, class _OtherExtents, class _OtherLayoutPolicy, class _OtherAccessor)
-  _CCCL_REQUIRES((extents_type::rank() == 0) //
-                 _CCCL_AND __is_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor> //
-                   _CCCL_AND(!__is_implicit_convertible_from<_OtherExtents, _OtherLayoutPolicy, _OtherAccessor>))
-  _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr mdspan(
-    const mdspan<_OtherElementType, _OtherExtents, _OtherLayoutPolicy, _OtherAccessor>& __other)
-      : __ptr_(__other.__ptr_)
-      , __map_(__other.__map_)
-      , __acc_(__other.__acc_)
-  {
-    static_assert(_CCCL_TRAIT(is_constructible, data_handle_type, const typename _OtherAccessor::data_handle_type&),
-                  "mdspan: incompatible data_handle_type for mdspan construction");
-    static_assert(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents),
-                  "mdspan: incompatible extents for mdspan construction");
   }
 
   constexpr mdspan& operator=(const mdspan&) = default;
@@ -492,9 +459,9 @@ public:
   };
 
 private:
-  _CCCL_NO_UNIQUE_ADDRESS data_handle_type __ptr_{};
-  _CCCL_NO_UNIQUE_ADDRESS mapping_type __map_{};
-  _CCCL_NO_UNIQUE_ADDRESS accessor_type __acc_{};
+  _CCCL_NO_UNIQUE_ADDRESS data_handle_type __ptr_;
+  _CCCL_NO_UNIQUE_ADDRESS mapping_type __map_;
+  _CCCL_NO_UNIQUE_ADDRESS accessor_type __acc_;
 
   template <class, class, class, class>
   friend class mdspan;
