@@ -615,7 +615,7 @@ public:
 
   template <size_t... _OtherExtents>
   static constexpr bool __is_matching_extents =
-    (_OtherExtents == dynamic_extent || _Extents == dynamic_extent || _OtherExtents == _Extents) && ... && true;
+    ((_OtherExtents == dynamic_extent || _Extents == dynamic_extent || _OtherExtents == _Extents) && ... && true);
 
   _CCCL_TEMPLATE(class _OtherIndexType, size_t... _OtherExtents)
   _CCCL_REQUIRES((sizeof...(_OtherExtents) == sizeof...(_Extents)) _CCCL_AND __is_matching_extents<_OtherExtents...>
