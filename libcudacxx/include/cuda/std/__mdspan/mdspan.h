@@ -394,24 +394,17 @@ public:
   }
 
   template <size_t... _Idxs>
-  _LIBCUDACXX_HIDE_FROM_ABI constexpr bool __check_size(index_sequence<_Idxs...>) const noexcept
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr bool __check_size() const noexcept
   {
-    if constexpr (sizeof...(_Idxs) != 0)
+    size_t __prod = 1;
+    for (size_t __r = 0; __r != extents_type::rank(); ++__r)
     {
-      size_t __prod = 1;
-      for (size_t __r = 0; __r != sizeof...(_Idxs); ++__r)
+      if (__mul_overflow(__prod, __map_.extents().extent(__r), &__prod))
       {
-        if (__mul_overflow(__prod, __map_.extents().extent(_Idxs), &__prod))
-        {
-          return false;
-        }
+        return false;
       }
     }
-    else
-    {
-      return true;
-    }
-    _CCCL_UNREACHABLE();
+    return true;
   }
 
   template <size_t... _Idxs>
@@ -424,7 +417,7 @@ public:
   {
     // Could leave this as only checked in debug mode: semantically size() is never
     // guaranteed to be related to any accessible range
-    _CCCL_ASSERT(__check_size(make_index_sequence<rank()>()), "mdspan: size() is not representable as size_type");
+    _CCCL_ASSERT(__check_size(), "mdspan: size() is not representable as size_type");
     return __op_size(make_index_sequence<rank()>());
   }
 
