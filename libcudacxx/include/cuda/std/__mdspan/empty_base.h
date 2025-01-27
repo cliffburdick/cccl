@@ -37,6 +37,14 @@ struct _CCCL_DECLSPEC_EMPTY_BASES __mdspan_ebco_impl
   _Elem __elem_;
 
   _CCCL_EXEC_CHECK_DISABLE
+  _CCCL_TEMPLATE(class _Elem_ = _Elem)
+  _CCCL_REQUIRES(_CCCL_TRAIT(is_default_constructible, _Elem_))
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr __mdspan_ebco_impl() noexcept(
+    _CCCL_TRAIT(is_nothrow_default_constructible, _Elem_))
+      : __elem_()
+  {}
+
+  _CCCL_EXEC_CHECK_DISABLE
   _CCCL_TEMPLATE(class... _Args)
   _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, _Elem, _Args...))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr __mdspan_ebco_impl(_Args&&... __args) noexcept(
@@ -57,6 +65,14 @@ struct _CCCL_DECLSPEC_EMPTY_BASES __mdspan_ebco_impl
 template <size_t _Index, class _Elem>
 struct _CCCL_DECLSPEC_EMPTY_BASES __mdspan_ebco_impl<_Index, _Elem, true> : _Elem
 {
+  _CCCL_EXEC_CHECK_DISABLE
+  _CCCL_TEMPLATE(class _Elem_ = _Elem)
+  _CCCL_REQUIRES(_CCCL_TRAIT(is_default_constructible, _Elem_))
+  _LIBCUDACXX_HIDE_FROM_ABI constexpr __mdspan_ebco_impl() noexcept(
+    _CCCL_TRAIT(is_nothrow_default_constructible, _Elem_))
+      : _Elem()
+  {}
+
   _CCCL_EXEC_CHECK_DISABLE
   _CCCL_TEMPLATE(class... _Args)
   _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, _Elem, _Args...))
