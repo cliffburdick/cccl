@@ -55,21 +55,23 @@ __host__ __device__ constexpr bool check_operator_constraints(Mapping, Indices..
   return false;
 }
 
-template <class M, class T, class... Args, cuda::std::enable_if_t<(M::extents_type::rank() == sizeof...(Args)), int> = 0>
+template <class M, class T, class... Args>
 __host__ __device__ constexpr void iterate_right(M m, T& count, Args... args)
 {
-  ASSERT_NOEXCEPT(m(args...));
-  assert(count == m(args...));
-  count++;
-}
-
-template <class M, class T, class... Args, cuda::std::enable_if_t<(M::extents_type::rank() != sizeof...(Args)), int> = 0>
-__host__ __device__ constexpr void iterate_right(M m, T& count, Args... args)
-{
-  constexpr size_t r = sizeof...(Args);
-  for (typename M::index_type i = 0; i < m.extents().extent(r); i++)
+  using extents = typename M::extents_type;
+  if constexpr (extents::rank() == sizeof...(Args))
   {
-    iterate_right(m, count, args..., i);
+    ASSERT_NOEXCEPT(m(args...));
+    assert(count == m(args...));
+    count++;
+  }
+  else
+  {
+    constexpr size_t r = sizeof...(Args);
+    for (typename M::index_type i = 0; i < m.extents().extent(r); i++)
+    {
+      iterate_right(m, count, args..., i);
+    }
   }
 }
 
@@ -77,7 +79,7 @@ template <class E, class... Args>
 __host__ __device__ constexpr void test_iteration(Args... args)
 {
   using M = cuda::std::layout_right::mapping<E>;
-  M m(E(args...));
+  M m{E{args...}};
 
   typename E::index_type count = 0;
   iterate_right(m, count);
