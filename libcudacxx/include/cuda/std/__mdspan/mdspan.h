@@ -104,8 +104,8 @@ public:
   using data_handle_type = typename accessor_type::data_handle_type;
   using reference        = typename accessor_type::reference;
   using __base           = __mdspan_ebco<typename accessor_type::data_handle_type,
-                               typename _LayoutPolicy::template mapping<_Extents>,
-                               _AccessorPolicy>;
+                                         typename _LayoutPolicy::template mapping<_Extents>,
+                                         _AccessorPolicy>;
 
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr rank_type rank() noexcept
   {

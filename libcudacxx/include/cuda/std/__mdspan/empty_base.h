@@ -29,7 +29,6 @@
 #include <cuda/std/__type_traits/is_nothrow_default_constructible.h>
 #include <cuda/std/__utility/forward.h>
 
-
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 template <size_t _Index, class _Elem, bool = _CCCL_TRAIT(is_empty, _Elem)>

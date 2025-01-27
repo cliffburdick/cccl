@@ -50,7 +50,7 @@ __host__ __device__ constexpr void test_mdspan_types(const H&, const M&, const A
 
   MDS m;
 #if !defined(TEST_COMPILER_GCC)
-  static_assert(noexcept(MDS()) == (noexcept(H())&& noexcept(M())&& noexcept(A())), "");
+  static_assert(noexcept(MDS()) == (noexcept(H()) && noexcept(M()) && noexcept(A())), "");
 #endif // !TEST_COMPILER_GCC
   assert(m.extents() == typename MDS::extents_type());
   test_equality_handle(m, H{});

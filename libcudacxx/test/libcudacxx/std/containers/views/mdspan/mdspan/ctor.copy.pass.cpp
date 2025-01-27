@@ -33,7 +33,7 @@ __host__ __device__ constexpr void test_mdspan_types(const H& handle, const M& m
 
   MDS m_org(handle, map, acc);
   MDS m(m_org);
-  static_assert(noexcept(MDS(m_org)) == (noexcept(H(handle))&& noexcept(M(map))&& noexcept(A(acc))), "");
+  static_assert(noexcept(MDS(m_org)) == (noexcept(H(handle)) && noexcept(M(map)) && noexcept(A(acc))), "");
   static_assert(cuda::std::is_trivially_copyable<MDS>::value
                   == (cuda::std::is_trivially_copyable<H>::value && cuda::std::is_trivially_copyable<M>::value
                       && cuda::std::is_trivially_copyable<A>::value),

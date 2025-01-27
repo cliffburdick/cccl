@@ -48,9 +48,9 @@ __host__ __device__ constexpr auto& access(MDS mds, int64_t i0)
 template <class MDS,
           class... Indices,
           class  = cuda::std::enable_if_t<
-            cuda::std::__all<cuda::std::is_same<decltype(cuda::std::declval<MDS>()[cuda::std::declval<Indices>()...]),
-                                                typename MDS::reference>::value>::value,
-            int> = 0>
+             cuda::std::__all<cuda::std::is_same<decltype(cuda::std::declval<MDS>()[cuda::std::declval<Indices>()...]),
+                                                 typename MDS::reference>::value>::value,
+             int> = 0>
 __host__ __device__ constexpr bool check_operator_constraints(MDS m, Indices... idxs)
 {
   unused(m[idxs...]);

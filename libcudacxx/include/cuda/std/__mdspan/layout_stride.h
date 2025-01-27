@@ -587,8 +587,8 @@ public:
 #  if _CCCL_STD_VER <= 2017
   template <class _OtherMapping>
   _LIBCUDACXX_HIDE_FROM_ABI friend constexpr auto operator==(const _OtherMapping& __lhs, const mapping& __rhs) noexcept
-    _CCCL_TRAILING_REQUIRES(bool)(
-      (!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>) &&__can_compare<_OtherMapping>)
+    _CCCL_TRAILING_REQUIRES(bool)((!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>)
+                                  && __can_compare<_OtherMapping>)
   {
     return __op_eq(__rhs, __lhs);
   }
@@ -600,8 +600,8 @@ public:
   }
   template <class _OtherMapping, class _Extents2 = _Extents>
   _LIBCUDACXX_HIDE_FROM_ABI friend constexpr auto operator!=(const _OtherMapping& __lhs, const mapping& __rhs) noexcept
-    _CCCL_TRAILING_REQUIRES(bool)(
-      (!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>) &&__can_compare<_OtherMapping>)
+    _CCCL_TRAILING_REQUIRES(bool)((!__mdspan_detail::__is_mapping_of<layout_stride, _OtherMapping>)
+                                  && __can_compare<_OtherMapping>)
   {
     return __op_eq(__rhs, __lhs);
   }

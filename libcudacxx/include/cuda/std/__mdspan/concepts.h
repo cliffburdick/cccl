@@ -119,15 +119,9 @@ template <class _Mapping>
 concept __layout_mapping_alike = requires {
   requires __is_mapping_of<typename _Mapping::layout_type, _Mapping>;
   requires __is_extents_v<typename _Mapping::extents_type>;
-  {
-    _Mapping::is_always_strided()
-  } -> same_as<bool>;
-  {
-    _Mapping::is_always_exhaustive()
-  } -> same_as<bool>;
-  {
-    _Mapping::is_always_unique()
-  } -> same_as<bool>;
+  { _Mapping::is_always_strided() } -> same_as<bool>;
+  { _Mapping::is_always_exhaustive() } -> same_as<bool>;
+  { _Mapping::is_always_unique() } -> same_as<bool>;
   bool_constant<_Mapping::is_always_strided()>::value;
   bool_constant<_Mapping::is_always_exhaustive()>::value;
   bool_constant<_Mapping::is_always_unique()>::value;
