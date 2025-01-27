@@ -459,9 +459,9 @@ public:
   };
 
 private:
-  _CCCL_NO_UNIQUE_ADDRESS data_handle_type __ptr_;
-  _CCCL_NO_UNIQUE_ADDRESS mapping_type __map_;
-  _CCCL_NO_UNIQUE_ADDRESS accessor_type __acc_;
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS data_handle_type __ptr_;
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS mapping_type __map_;
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS accessor_type __acc_;
 
   template <class, class, class, class>
   friend class mdspan;

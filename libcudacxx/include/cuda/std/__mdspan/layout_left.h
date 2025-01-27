@@ -313,7 +313,7 @@ public:
 #  endif // _CCCL_STD_VER <= 2017
 
 private:
-  _CCCL_NO_UNIQUE_ADDRESS extents_type __extents_{};
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS extents_type __extents_{};
 };
 
 _LIBCUDACXX_END_NAMESPACE_STD

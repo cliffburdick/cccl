@@ -67,9 +67,9 @@ struct strided_slice
                 "[mdspan.submdspan.strided.slice] cuda::std::strided_slice::stride_type must be signed or unsigned or "
                 "integral-constant-like");
 
-  _CCCL_NO_UNIQUE_ADDRESS offset_type offset{};
-  _CCCL_NO_UNIQUE_ADDRESS extent_type extent{};
-  _CCCL_NO_UNIQUE_ADDRESS stride_type stride{};
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS offset_type offset{};
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS extent_type extent{};
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS stride_type stride{};
 };
 
 template <class _OffsetType, class _ExtentType, class _StrideType>

@@ -52,7 +52,7 @@ struct submdspan_mapping_result
   static_assert(true, // __is_layout_mapping<_LayoutMapping>,
                 "[mdspan.submdspan.submdspan.mapping.result] shall meet the layout mapping requirements");
 
-  _CCCL_NO_UNIQUE_ADDRESS _LayoutMapping mapping{};
+  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS _LayoutMapping mapping{};
   size_t offset{};
 };
 
