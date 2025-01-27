@@ -572,9 +572,9 @@ public:
     _CCCL_UNREACHABLE();
   }
 
-  template <class _OtherMapping>
+  template <class _OtherMapping, class _OtherExtents = typename _OtherMapping::extents_type>
   static constexpr bool __can_compare =
-    __mdspan_detail::__layout_mapping_alike<_OtherMapping> && (_OtherMapping::extents_type::rank() == _Extents::rank())
+    __mdspan_detail::__layout_mapping_alike<_OtherMapping> && (_OtherExtents::rank() == _Extents::rank())
     && _OtherMapping::is_always_strided();
 
   template <class _OtherMapping>
