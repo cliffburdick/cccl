@@ -31,6 +31,7 @@
 #include <cuda/std/__concepts/concept_macros.h>
 #include <cuda/std/__fwd/mdspan.h>
 #include <cuda/std/__mdspan/concepts.h>
+#include <cuda/std/__mdspan/empty_base.h>
 #include <cuda/std/__mdspan/extents.h>
 #include <cuda/std/__type_traits/is_constructible.h>
 #include <cuda/std/__type_traits/is_convertible.h>
@@ -40,16 +41,13 @@
 #include <cuda/std/cstddef>
 #include <cuda/std/limits>
 
-_CCCL_DIAG_PUSH
-_CCCL_DIAG_SUPPRESS_MSVC(4848) // [[no_unique_address]] prior to C++20 as a vendor extension
-
 #if _CCCL_STD_VER >= 2017
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 // Helper for lightweight test checking that one did pass a layout policy as LayoutPolicy template argument
 template <class _Extents>
-class layout_left::mapping
+class layout_left::mapping : private __mdspan_ebco<_Extents>
 {
 public:
   static_assert(__mdspan_detail::__is_extents<_Extents>::value,
@@ -60,6 +58,10 @@ public:
   using size_type    = typename extents_type::size_type;
   using rank_type    = typename extents_type::rank_type;
   using layout_type  = layout_left;
+  using __base       = __mdspan_ebco<_Extents>;
+
+  template <class, class, class, class>
+  friend class mdspan;
 
 private:
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr bool __mul_overflow(index_type x, index_type y, index_type* res) noexcept
@@ -92,7 +94,7 @@ public:
   constexpr mapping() noexcept               = default;
   constexpr mapping(const mapping&) noexcept = default;
   _LIBCUDACXX_HIDE_FROM_ABI constexpr mapping(const extents_type& __ext) noexcept
-      : __extents_(__ext)
+      : __base(__ext)
   {
     // not catching this could lead to out-of-bounds access later when used inside mdspan
     // mapping<dextents<char, 2>> map(dextents<char, 2>(40,40)); map(10, 3) == -126
@@ -104,7 +106,7 @@ public:
   _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents)
                    _CCCL_AND _CCCL_TRAIT(is_convertible, _OtherExtents, extents_type))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr mapping(const mapping<_OtherExtents>& __other) noexcept
-      : __extents_(__other.extents())
+      : __base(__other.extents())
   {
     // not catching this could lead to out-of-bounds access later when used inside mdspan
     // mapping<dextents<char, 2>> map(mapping<dextents<int, 2>>(dextents<int, 2>(40,40))); map(10, 3) == -126
@@ -117,7 +119,7 @@ public:
   _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents)
                    _CCCL_AND(!_CCCL_TRAIT(is_convertible, _OtherExtents, extents_type)))
   _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr mapping(const mapping<_OtherExtents>& __other) noexcept
-      : __extents_(__other.extents())
+      : __base(__other.extents())
   {
     // not catching this could lead to out-of-bounds access later when used inside mdspan
     // mapping<dextents<char, 2>> map(mapping<dextents<int, 2>>(dextents<int, 2>(40,40))); map(10, 3) == -126
@@ -130,7 +132,7 @@ public:
   _CCCL_REQUIRES((_OtherExtents::rank() <= 1) _CCCL_AND _CCCL_TRAIT(is_constructible, extents_type, _OtherExtents)
                    _CCCL_AND _CCCL_TRAIT(is_convertible, _OtherExtents, extents_type))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr mapping(const layout_right::mapping<_OtherExtents>& __other) noexcept
-      : __extents_(__other.extents())
+      : __base(__other.extents())
   {
     // not catching this could lead to out-of-bounds access later when used inside mdspan
     // Note: since this is constraint to rank 1, extents itself would catch the invalid conversion first
@@ -147,7 +149,7 @@ public:
   _CCCL_REQUIRES((_OtherExtents::rank() <= 1) _CCCL_AND _CCCL_TRAIT(is_constructible, extents_type, _OtherExtents)
                    _CCCL_AND(!_CCCL_TRAIT(is_convertible, _OtherExtents, extents_type)))
   _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr mapping(const layout_right::mapping<_OtherExtents>& __other) noexcept
-      : __extents_(__other.extents())
+      : __base(__other.extents())
   {
     // not catching this could lead to out-of-bounds access later when used inside mdspan
     // Note: since this is constraint to rank 1, extents itself would catch the invalid conversion first
@@ -178,7 +180,7 @@ public:
   _CCCL_TEMPLATE(class _OtherExtents)
   _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents) _CCCL_AND(extents_type::rank() > 0))
   _LIBCUDACXX_HIDE_FROM_ABI explicit constexpr mapping(const layout_stride::mapping<_OtherExtents>& __other) noexcept
-      : __extents_(__other.extents())
+      : __base(__other.extents())
   {
     _CCCL_ASSERT(__check_strides(__other),
                  "layout_left::mapping from layout_stride ctor: strides are not compatible with layout_left.");
@@ -190,7 +192,7 @@ public:
   _CCCL_TEMPLATE(class _OtherExtents)
   _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, extents_type, _OtherExtents) _CCCL_AND(extents_type::rank() == 0))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr mapping(const layout_stride::mapping<_OtherExtents>& __other) noexcept
-      : __extents_(__other.extents())
+      : __base(__other.extents())
   {}
 
   constexpr mapping& operator=(const mapping&) noexcept = default;
@@ -198,7 +200,7 @@ public:
   // [mdspan.layout.left.obs], observers
   _LIBCUDACXX_HIDE_FROM_ABI constexpr const extents_type& extents() const noexcept
   {
-    return __extents_;
+    return this->template __get<0>();
   }
 
   _LIBCUDACXX_HIDE_FROM_ABI constexpr index_type required_span_size() const noexcept
@@ -208,7 +210,7 @@ public:
     {
       for (size_t __r = 0; __r != extents_type::rank(); __r++)
       {
-        __size *= __extents_.extent(__r);
+        __size *= extents().extent(__r);
       }
     }
     return __size;
@@ -220,13 +222,13 @@ public:
   {
     index_type __res = 0;
 #  if _CCCL_STD_VER >= 2017
-    ((__res = __idx_a[extents_type::rank() - 1 - _Pos] + __extents_.extent(extents_type::rank() - 1 - _Pos) * __res),
+    ((__res = __idx_a[extents_type::rank() - 1 - _Pos] + extents().extent(extents_type::rank() - 1 - _Pos) * __res),
      ...);
 #  else // ^^^ _CCCL_STD_VER >= 2017 ^^^ / vvv _CCCL_STD_VER <= 2014 vvv
     constexpr size_t __pos[sizeof...(_Pos)] = {(extents_type::rank() - 1 - _Pos)...};
     for (size_t __i = 0; __i < sizeof...(_Pos); ++__i)
     {
-      __res = (__idx_a[__pos[__i]] + __extents_.extent(__pos[__i]) * __res);
+      __res = (__idx_a[__pos[__i]] + extents().extent(__pos[__i]) * __res);
     }
 #  endif // _CCCL_STD_VER <= 2014
     return __res;
@@ -246,7 +248,7 @@ public:
     // return a value exceeding required_span_size(), which is used to know how large an allocation one needs
     // Thus, this is a canonical point in multi-dimensional data structures to make invalid element access checks
     // However, mdspan does check this on its own, so for now we avoid double checking in hardened mode
-    _CCCL_ASSERT(__mdspan_detail::__is_multidimensional_index_in(__extents_, __idx...),
+    _CCCL_ASSERT(__mdspan_detail::__is_multidimensional_index_in(extents(), __idx...),
                  "layout_left::mapping: out of bounds indexing");
 
     const array<index_type, extents_type::rank()> __idx_a{static_cast<index_type>(__idx)...};
@@ -289,7 +291,7 @@ public:
     index_type __s = 1;
     for (rank_type __i = 0; __i < __r; __i++)
     {
-      __s *= __extents_.extent(__i);
+      __s *= extents().extent(__i);
     }
     return __s;
   }
@@ -311,15 +313,10 @@ public:
     return __lhs.extents() != __rhs.extents();
   }
 #  endif // _CCCL_STD_VER <= 2017
-
-private:
-  _CCCL_MDSPAN_NO_UNIQUE_ADDRESS extents_type __extents_{};
 };
 
 _LIBCUDACXX_END_NAMESPACE_STD
 
 #endif // _CCCL_STD_VER >= 2017
-
-_CCCL_DIAG_POP
 
 #endif // _LIBCUDACXX___MDSPAN_LAYOUT_LEFT_H
