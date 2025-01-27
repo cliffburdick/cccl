@@ -247,12 +247,12 @@ struct cub_operator_to_identity<T, cuda::maximum<>>
  **********************************************************************************************************************/
 
 using narrow_precision_type_list = c2h::type_list<
-#ifdef TEST_HALF_T
+#if TEST_HALF_T()
   __half,
-#endif
-#ifdef TEST_BF_T
+#endif // TEST_HALF_T()
+#if TEST_BF_T()
   __nv_bfloat16
-#endif
+#endif // TEST_BF_T()
   >;
 
 using fp_type_list =

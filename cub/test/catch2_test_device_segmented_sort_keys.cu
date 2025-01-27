@@ -28,6 +28,7 @@
 #include "insert_nested_NVTX_range_guard.h"
 // above header needs to be included first
 #include <cub/device/device_segmented_sort.cuh>
+#include <cub/util_type.cuh>
 
 #include "catch2_radix_sort_helper.cuh"
 #include "catch2_segmented_sort_helper.cuh"
@@ -37,20 +38,26 @@
 // graph launch.
 // %PARAM% TEST_LAUNCH lid 0:1
 
+static_assert(::cuda::std::__is_extended_floating_point<__half>::value);
+static_assert(::cuda::is_floating_point_v<__half>);
+
+cub::Twiddle<__half>::UnsignedBits a;
+cub::Twiddle<half_t>::UnsignedBits b;
+
 DECLARE_LAUNCH_WRAPPER(cub::DeviceSegmentedSort::StableSortKeys, stable_sort_keys);
 
 using key_types =
   c2h::type_list<bool,
                  std::uint8_t,
                  std::uint64_t
-#if TEST_HALF_T
+#if TEST_HALF_T()
                  ,
                  half_t
-#endif
-#if TEST_BF_T
+#endif // TEST_HALF_T()
+#if TEST_BF_T()
                  ,
                  bfloat16_t
-#endif
+#endif // TEST_BF_T()
                  >;
 
 C2H_TEST("DeviceSegmentedSortKeys: No segments", "[keys][segmented][sort][device]")
