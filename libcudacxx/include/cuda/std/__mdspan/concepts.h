@@ -49,13 +49,6 @@
 #include <cuda/std/__type_traits/remove_cvref.h>
 #include <cuda/std/span>
 
-// MSVC is broken with its own no unique address attribute
-#if _CCCL_COMPILER(MSVC)
-#  define _CCCL_MDSPAN_NO_UNIQUE_ADDRESS
-#else // ^^^ _CCCL_COMPILER(MSVC) ^^^ / vvv !_CCCL_COMPILER(MSVC) vvv
-#  define _CCCL_MDSPAN_NO_UNIQUE_ADDRESS _CCCL_NO_UNIQUE_ADDRESS
-#endif // !_CCCL_COMPILER(MSVC)
-
 #if _CCCL_STD_VER >= 2017
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
