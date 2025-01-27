@@ -46,7 +46,7 @@ struct _CCCL_DECLSPEC_EMPTY_BASES __mdspan_ebco_impl
 
   _CCCL_EXEC_CHECK_DISABLE
   _CCCL_TEMPLATE(class... _Args)
-  _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, _Elem, _Args...))
+  _CCCL_REQUIRES((sizeof...(_Args) != 0) _CCCL_AND _CCCL_TRAIT(is_constructible, _Elem, _Args...))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr __mdspan_ebco_impl(_Args&&... __args) noexcept(
     _CCCL_TRAIT(is_nothrow_constructible, _Elem, _Args...))
       : __elem_(_CUDA_VSTD::forward<_Args>(__args)...)
@@ -75,7 +75,7 @@ struct _CCCL_DECLSPEC_EMPTY_BASES __mdspan_ebco_impl<_Index, _Elem, true> : _Ele
 
   _CCCL_EXEC_CHECK_DISABLE
   _CCCL_TEMPLATE(class... _Args)
-  _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, _Elem, _Args...))
+  _CCCL_REQUIRES((sizeof...(_Args) != 0) _CCCL_AND _CCCL_TRAIT(is_constructible, _Elem, _Args...))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr __mdspan_ebco_impl(_Args&&... __args) noexcept(
     _CCCL_TRAIT(is_nothrow_constructible, _Elem, _Args...))
       : _Elem(_CUDA_VSTD::forward<_Args>(__args)...)
@@ -108,7 +108,7 @@ struct _CCCL_DECLSPEC_EMPTY_BASES __mdspan_ebco<_Elem1> : __mdspan_ebco_impl<0, 
 
   _CCCL_EXEC_CHECK_DISABLE
   _CCCL_TEMPLATE(class... _Args)
-  _CCCL_REQUIRES(_CCCL_TRAIT(is_constructible, _Elem1, _Args...))
+  _CCCL_REQUIRES((sizeof...(_Args) != 0) _CCCL_AND _CCCL_TRAIT(is_constructible, _Elem1, _Args...))
   _LIBCUDACXX_HIDE_FROM_ABI constexpr __mdspan_ebco(_Args&&... __args) noexcept(
     _CCCL_TRAIT(is_nothrow_constructible, _Elem1, _Args...))
       : __base1(_CUDA_VSTD::forward<_Args>(__args)...)
