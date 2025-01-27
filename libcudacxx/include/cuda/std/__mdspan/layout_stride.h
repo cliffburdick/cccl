@@ -192,7 +192,8 @@ private:
   template <class _StridedMapping>
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr index_type __offset(const _StridedMapping& __mapping)
   {
-    if constexpr (_StridedMapping::extents_type::rank() != 0)
+    using _StridedExtents = typename _StridedMapping::extents_type;
+    if constexpr (_StridedExtents::rank() != 0)
     {
       if (__mapping.required_span_size() == static_cast<typename _StridedMapping::index_type>(0))
       {
