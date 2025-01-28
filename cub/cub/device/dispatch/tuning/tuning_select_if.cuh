@@ -514,7 +514,7 @@ struct sm90_tuning<__uint128_t, flagged::yes, keep_rejects::yes, offset_size::_4
 template <class InputT>
 constexpr primitive is_primitive()
 {
-  return Traits<InputT>::PRIMITIVE ? primitive::yes : primitive::no;
+  return detail::is_primitive<InputT>::value ? primitive::yes : primitive::no;
 }
 
 template <class FlagT>

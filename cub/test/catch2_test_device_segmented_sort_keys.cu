@@ -33,16 +33,11 @@
 #include "catch2_radix_sort_helper.cuh"
 #include "catch2_segmented_sort_helper.cuh"
 #include <c2h/catch2_test_helper.h>
+#include <c2h/half.cuh>
 
 // FIXME: Graph launch disabled, algorithm syncs internally. WAR exists for device-launch, figure out how to enable for
 // graph launch.
 // %PARAM% TEST_LAUNCH lid 0:1
-
-static_assert(::cuda::std::__is_extended_floating_point<__half>::value);
-static_assert(::cuda::is_floating_point_v<__half>);
-
-cub::Twiddle<__half>::UnsignedBits a;
-cub::Twiddle<half_t>::UnsignedBits b;
 
 DECLARE_LAUNCH_WRAPPER(cub::DeviceSegmentedSort::StableSortKeys, stable_sort_keys);
 
