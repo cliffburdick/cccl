@@ -880,7 +880,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_15.tpb_608.ns_676.dcid_7.l2w_500 1.171303  1.042818  1.175890  1.456731
-  static constexpr int items                         = 15;
+  static constexpr int nominal_4b_items              = 15;
   static constexpr int threads                       = 608;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -898,7 +898,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_22.tpb_320.ns_1756.dcid_6.l2w_615 1.206387  1.079118  1.202408  1.307692
-  static constexpr int items                         = 22;
+  static constexpr int nominal_4b_items              = 22;
   static constexpr int threads                       = 320;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -916,7 +916,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_1.ld_0.ipt_19.tpb_320.ns_716.dcid_5.l2w_570 1.177521  1.123348  1.177703  1.307692
-  static constexpr int items                         = 19;
+  static constexpr int nominal_4b_items              = 19;
   static constexpr int threads                       = 320;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -934,7 +934,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_1.ld_0.ipt_20.tpb_416.ns_1672.dcid_7.l2w_1050 1.086221  0.977775  1.090731  1.257618
-  static constexpr int items                         = 20;
+  static constexpr int nominal_4b_items              = 20;
   static constexpr int threads                       = 416;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -952,7 +952,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_22.tpb_576.ns_368.dcid_7.l2w_680 1.191750  0.990521  1.175654  1.433174
-  static constexpr int items                         = 22;
+  static constexpr int nominal_4b_items              = 22;
   static constexpr int threads                       = 576;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -970,7 +970,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_1.ld_0.ipt_20.tpb_608.ns_516.dcid_7.l2w_635 1.244961  0.848558  1.212567  1.461538
-  static constexpr int items                         = 20;
+  static constexpr int nominal_4b_items              = 20;
   static constexpr int threads                       = 608;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -988,7 +988,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_1.ld_0.ipt_18.tpb_608.ns_1712.dcid_5.l2w_825 1.255078  0.990588  1.231055  1.421176
-  static constexpr int items                         = 18;
+  static constexpr int nominal_4b_items              = 18;
   static constexpr int threads                       = 608;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1006,7 +1006,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_1.ld_0.ipt_14.tpb_512.ns_1468.dcid_7.l2w_820 1.111830  1.011070  1.119481  1.245868
-  static constexpr int items                         = 14;
+  static constexpr int nominal_4b_items              = 14;
   static constexpr int threads                       = 512;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1024,7 +1024,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_22.tpb_224.ns_68.dcid_2.l2w_990 1.151989  1.064433  1.146707  1.305288
-  static constexpr int items                         = 22;
+  static constexpr int nominal_4b_items              = 22;
   static constexpr int threads                       = 224;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1042,7 +1042,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_22.tpb_320.ns_560.dcid_5.l2w_640 1.205538  1.080520  1.201709  1.307692
-  static constexpr int items                         = 22;
+  static constexpr int nominal_4b_items              = 22;
   static constexpr int threads                       = 320;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1060,7 +1060,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_1.ld_0.ipt_19.tpb_608.ns_724.dcid_5.l2w_970 1.196592  0.982227  1.177984  1.310843
-  static constexpr int items                         = 19;
+  static constexpr int nominal_4b_items              = 19;
   static constexpr int threads                       = 608;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1078,7 +1078,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_1.ld_0.ipt_23.tpb_416.ns_1608.dcid_2.l2w_560 1.099752  0.977393  1.106477  1.259336
-  static constexpr int items                         = 23;
+  static constexpr int nominal_4b_items              = 23;
   static constexpr int threads                       = 416;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1096,7 +1096,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_20.tpb_608.ns_1016.dcid_6.l2w_545 1.239144  1.002404  1.225460  1.444711
-  static constexpr int items                         = 20;
+  static constexpr int nominal_4b_items              = 20;
   static constexpr int threads                       = 608;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1114,7 +1114,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_1.ld_0.ipt_22.tpb_288.ns_124.dcid_2.l2w_690 1.202783  1.000000  1.183737  1.311755
-  static constexpr int items                         = 22;
+  static constexpr int nominal_4b_items              = 22;
   static constexpr int threads                       = 288;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1132,7 +1132,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_1.ld_0.ipt_19.tpb_608.ns_1884.dcid_6.l2w_950 1.250302  0.988124  1.225191  1.392931
-  static constexpr int items                         = 19;
+  static constexpr int nominal_4b_items              = 19;
   static constexpr int threads                       = 608;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1150,7 +1150,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_1.ld_0.ipt_23.tpb_416.ns_0.dcid_2.l2w_1200 1.156864  1.011990  1.152368  1.266667
-  static constexpr int items                         = 23;
+  static constexpr int nominal_4b_items              = 23;
   static constexpr int threads                       = 416;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_WARP_TRANSPOSE;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1169,7 +1169,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_20.tpb_448.ns_964.dcid_7.l2w_385 1.111204  1.036205  1.111986  1.275210
-  static constexpr int items                         = 20;
+  static constexpr int nominal_4b_items              = 20;
   static constexpr int threads                       = 448;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1187,7 +1187,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_18.tpb_256.ns_300.dcid_6.l2w_820 1.107466  0.923750  1.126995  1.346591
-  static constexpr int items                         = 18;
+  static constexpr int nominal_4b_items              = 18;
   static constexpr int threads                       = 256;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1205,7 +1205,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_19.tpb_256.ns_1608.dcid_7.l2w_675 1.097548  0.964114  1.109189  1.283333
-  static constexpr int items                         = 19;
+  static constexpr int nominal_4b_items              = 19;
   static constexpr int threads                       = 256;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1223,7 +1223,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_21.tpb_384.ns_300.dcid_7.l2w_580 1.239128  1.019324  1.238373  1.347458
-  static constexpr int items                         = 21;
+  static constexpr int nominal_4b_items              = 21;
   static constexpr int threads                       = 384;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1241,7 +1241,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_1.ipt_20.tpb_448.ns_240.dcid_6.l2w_845 1.097180  0.990453  1.091667  1.452153
-  static constexpr int items                         = 20;
+  static constexpr int nominal_4b_items              = 20;
   static constexpr int threads                       = 448;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_CA;
@@ -1259,7 +1259,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_14.tpb_320.ns_1428.dcid_7.l2w_830 1.380164  1.133333  1.367514  1.628793
-  static constexpr int items                         = 14;
+  static constexpr int nominal_4b_items              = 14;
   static constexpr int threads                       = 320;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1277,7 +1277,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_14.tpb_640.ns_1204.dcid_5.l2w_635 1.155209  1.000000  1.143742  1.380659
-  static constexpr int items                         = 14;
+  static constexpr int nominal_4b_items              = 14;
   static constexpr int threads                       = 640;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1295,7 +1295,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::yes>
 {
   // trp_0.ld_0.ipt_19.tpb_384.ns_1016.dcid_7.l2w_875 1.227540  1.181818  1.223936  1.261954
-  static constexpr int items                         = 19;
+  static constexpr int nominal_4b_items              = 19;
   static constexpr int threads                       = 384;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1313,7 +1313,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_24.tpb_256.ns_2024.dcid_5.l2w_835 1.146782  1.001841  1.149438  1.439904
-  static constexpr int items                         = 24;
+  static constexpr int nominal_4b_items              = 24;
   static constexpr int threads                       = 256;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1331,7 +1331,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_18.tpb_256.ns_1832.dcid_5.l2w_590 1.128674  0.984403  1.150806  1.355932
-  static constexpr int items                         = 18;
+  static constexpr int nominal_4b_items              = 18;
   static constexpr int threads                       = 256;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1349,7 +1349,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_11.tpb_448.ns_476.dcid_7.l2w_665 1.173664  1.035556  1.186114  1.393153
-  static constexpr int items                         = 11;
+  static constexpr int nominal_4b_items              = 11;
   static constexpr int threads                       = 448;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1367,7 +1367,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_20.tpb_384.ns_1420.dcid_5.l2w_525 (39_new/2.db)  1.157326  1.110920  1.162458  1.259336
-  static constexpr int items                         = 20;
+  static constexpr int nominal_4b_items              = 20;
   static constexpr int threads                       = 384;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1385,7 +1385,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_12.tpb_256.ns_0.dcid_5.l2w_850 1.150864  1.005760  1.157687  1.395833
-  static constexpr int items                         = 12;
+  static constexpr int nominal_4b_items              = 12;
   static constexpr int threads                       = 256;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1403,7 +1403,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_12.tpb_256.ns_1552.dcid_7.l2w_730 1.374892  1.171831  1.360076  1.513390
-  static constexpr int items                         = 12;
+  static constexpr int nominal_4b_items              = 12;
   static constexpr int threads                       = 256;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1421,7 +1421,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_14.tpb_352.ns_1444.dcid_5.l2w_655 1.183452  1.000000  1.177224  1.402083
-  static constexpr int items                         = 14;
+  static constexpr int nominal_4b_items              = 14;
   static constexpr int threads                       = 352;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
@@ -1439,7 +1439,7 @@ struct sm100_tuning<Input,
                     distinct_partitions::no>
 {
   // trp_0.ld_0.ipt_11.tpb_512.ns_536.dcid_2.l2w_845 1.248969  1.184659  1.251631  1.360795
-  static constexpr int items                         = 11;
+  static constexpr int nominal_4b_items              = 11;
   static constexpr int threads                       = 512;
   static constexpr BlockLoadAlgorithm load_algorithm = BLOCK_LOAD_DIRECT;
   static constexpr CacheLoadModifier load_modifier   = LOAD_DEFAULT;
