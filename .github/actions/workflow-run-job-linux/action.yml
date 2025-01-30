@@ -136,6 +136,27 @@ runs:
           gpu_request+=(--gpus "device=${NVIDIA_VISIBLE_DEVICES}")
         fi
 
+        mkdir artifacts
+        cat <<EOF > copy_artifacts.sh
+        #! /usr/bin/env bash
+
+        results_dir=/artifacts
+
+        # Finds a matching file in the repo directory and copies it to the results directory.
+        find_and_copy() {
+          filename="\$1"
+          filepath="\$(find . -name "\${filename}" -print -quit)"
+          if [[ -z "\$filepath" ]]; then
+            echo "\${filename} does not exist in repo directory."
+            return 1
+          fi
+          cp -v "\$filepath" "\$result_dir"
+        }
+
+        find_and_copy "sccache_stats.json" || true # Ignore failures
+        EOF
+        chmod +x copy_artifacts.sh
+
         host_path() {
           sed "s@/__w@$(dirname "$(dirname "${{github.workspace}}")")@" <<< "$1"
         }
@@ -167,6 +188,8 @@ runs:
           --env "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" \
           --env "GITHUB_STEP_SUMMARY=$GITHUB_STEP_SUMMARY" \
           --volume "${{github.workspace}}/ci.sh:/ci.sh" \
+          --volume "${{github.workspace}}/copy_artifacts.sh:/copy_artifacts.sh" \
+          --volume "${{github.workspace}}/artifacts:/artifacts" \
           --volume "$(host_path "$RUNNER_TEMP")/.aws:/root/.aws" \
           --volume "$(dirname "$(dirname "${{github.workspace}}")"):/__w" \
           -- /ci.sh
@@ -179,19 +202,7 @@ runs:
         mkdir -p "$result_dir"
 
         touch "$result_dir/success"
-
-        # Finds a matching file in the repo directory and copies it to the results directory.
-        find_and_copy() {
-          filename="$1"
-          filepath="$(find ${{github.event.repository.name}} -name "${filename}" -print -quit)"
-          if [[ -z "$filepath" ]]; then
-            echo "${filename} does not exist in repo directory."
-            return 1
-          fi
-          cp -v "$filepath" "$result_dir"
-        }
-
-        find_and_copy "sccache_stats.json" || true # Ignore failures
+        cp -rv artifacts/* "$result_dir"
 
         echo "::group::Job artifacts"
         tree "$result_dir"
